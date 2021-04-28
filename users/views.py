@@ -9,33 +9,21 @@ from my_settings  import SECRET_KEY, ALGORITHM
 from .utils       import login_decorator
 from .models      import User
 
-class SignupView(view):
+class SigninView(View):
     def post(self, request):
-        try:
-            data           = json.loads(request.body)
-            email          = data['email']
-            password       = data['password']                                
-            name           = data['name']
-            password_regex = re.compile("(?=.*\d)(?=.*[a-z]).{8,32}$", re.IGNORECASE)
-            email_regex    = re.compile("^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$")
+        try: 
+            data     = json.loads(request.body)
+            email    = data['email']
+            password = data['password']
+            user     = User.objects.get(email=email)
+            token    = jwt.encode({'user_id': user.id}, SECRET_KEY, ALGORITHM)
 
-            if not password_regex.match(password):
-                return JsonResponse({'message' : 'INVALID_PASSWORD'}, status = 400)
+            if not User.objects.filter(email = email).exists():
+                return JsonResponse({'mesage' : 'INVALID_USER'}, status = 401)
 
-            if not email_regex.match(email):
-                return JsonResponse({'message' : 'INVALID_EMAIL'}, status = 400)
-
-            if User.objects.filter(email=email).exists():
-                return JsonResponse({'message' : 'DUPLICATED_EMAIL'}, status = 400)
-
-            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-
-            User.objects.create(
-                email        = email,
-                password     = hashed_password,
-                name         = name
-            )
-            return JsonResponse({'message' : 'SUCCESS'}, status = 201)
-                
+            if bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+                return JsonResponse({'message': 'SUCCESS', 'access_token': token}, status=200)
+            return JsonResponse({'message': 'INVALID_PASSWORD'}, status=401)
         except KeyError:
-            return JsonResponse({'message' : 'KEY_ERROR'}, status = 400)
+            return JsonResponse({'message': 'KEY_ERROR'}, status=400)
+
