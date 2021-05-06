@@ -6,6 +6,25 @@ from django.views import View
 from users.models      import User
 # from users.utils     import login_decorator
 from products.models   import Product
+from products.models   import ProductImage
+
+
+class ProductListView(View):
+    # @login_decorator
+    def get(self, request):
+        products = Product.objects.all()
+
+        product_list = []
+        for product in products:
+            dict = {
+                'id'            : product.id,
+                'name'          : product.name,
+                'sub_name'      : product.sub_name,
+                'price'         : product.price,
+                'image_url'     : [productimage.image_url for productimage in product.productimage_set.all()],
+            }
+            product_list.append(dict)
+        return JsonResponse({"products": product_list}, status=200) 
 
 class ProductDetailView(View):
     # @login_decorator
