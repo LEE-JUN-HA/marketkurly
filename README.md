@@ -36,3 +36,7 @@ URL : https://aquerytool.com:443/aquerymain/index/?rurl=d5e57212-86e1-4877-9ccb-
 
 ## 어디서 볼 수 있나요?
 소스 코드는 현재 GitHub에서 호스팅됩니다 : https://github.com/LEE-JUN-HA
+
+## Reference
+•이 프로젝트는 오늘의 집 사이트를 참조하여 학습목적으로 만들었습니다.
+•실무수준의 프로젝트이지만 학습용으로 만들었기 때문에 이 코드를 활용하여 이득을 취하거나 무단 배포할 경우 법적으로 문제될 수 있습니다.
